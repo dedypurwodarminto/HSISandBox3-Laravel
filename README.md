@@ -2,7 +2,5 @@
 
 Belajar PHP menggunakan Laravel 10.
 
-Termasuk HTML, CSS, JavaScript, MySQL, dan PHP.
+Termasuk HTML, CSS, JavaScript, MySQL, PHP, dan Git/GitHub.
 
-Laravel memerlukan PHP untuk menjalankan servernya sendiri selain untuk menerjemahkan kode PHP itu sendiri.
-Composer digunakan untuk membuat project baru, sehingga composer perlu dipasang pada sistem.
