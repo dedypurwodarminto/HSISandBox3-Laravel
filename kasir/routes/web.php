@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,8 +16,22 @@ use App\Http\Controllers\HomeController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+//Login
+Route::get('/', [AuthController::class, 'index']);
+Route::get('/login', [AuthController::class, 'index']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/logout', [AuthController::class, 'logout']);
 
-Route::get('/',[HomeController::class,'index']);
+Route::get('/home', function () {
+   return redirect('/');
+});
+
+Route::group(['middleware' => ['auth', 'checkRole:admin']], function () {
+   Route::get('/index', [HomeController::class, 'index']);
+   Route::get('/home', [HomeController::class, 'index']);
+});
+
+Route::group(['middleware' => ['auth', 'checkRole:kasir']], function () {
+   Route::get('/', [HomeController::class, 'index']);
+   Route::get('/home', [HomeController::class, 'index']);
+});

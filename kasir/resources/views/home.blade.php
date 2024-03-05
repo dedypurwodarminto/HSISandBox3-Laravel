@@ -76,11 +76,19 @@
                                 <div class="dropdown-content-body">
                                     <ul>
                                         <li>
-                                            <a href="#"><i class="icon-user"></i> <span>Profile</span></a>
+                                            <a href="#"><i class="icon-user"></i>
+                                                <span>
+                                                    Profile {{ Auth::user()->name }}
+                                                </span>
+                                            </a>
                                         </li>                                        
                                         <hr class="my-2">
                                         <li>
-                                            <a href="#"><i class="icon-key"></i> <span>Logout</span></a>
+                                            <a href="/logout"><i class="icon-key"></i>
+                                                <span>
+                                                    Logout ({{ Auth::user()->role }})
+                                                </span>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>

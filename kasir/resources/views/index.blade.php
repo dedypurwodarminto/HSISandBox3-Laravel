@@ -38,13 +38,22 @@
                         <div class="card login-form mb-0">
                             <div class="card-body pt-5">
                                 <a class="text-center" href="#"> <h4>L O G I N</h4></a>
-                                <form class="mt-5 mb-5 login-input" method="POST" action="">
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $item)
+                                                <li>{{ $item }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                                <form class="mt-5 mb-5 login-input" method="POST" action="login">
                                     @csrf
                                     <div class="form-group">
-                                        <input type="email" class="form-control" placeholder="Email" name="email" require>
+                                        <input type="email" class="form-control" placeholder="Email" name="email" value="{{old('email')}}" required>
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Password" name="password" require>
+                                        <input type="password" class="form-control" placeholder="Password" name="password" required>
                                     </div>
                                     <button type="submit" class="btn login-form__btn submit w-100">Masuk</button>
                                 </form>
