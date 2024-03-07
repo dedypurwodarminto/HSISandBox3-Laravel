@@ -9,7 +9,6 @@
     <title>Kasir</title>
     <!-- Favicon icon -->
     <link rel="icon" type="/assets/image/png" sizes="16x16" href="/assets/images/favicon.png">
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
     <link href="/assets/css/style.css" rel="stylesheet">
     
 </head>
@@ -30,27 +29,18 @@
         Preloader end
     ********************-->
 
-        <div class="login-form-bg h-100">
+    <div class="login-form-bg h-100">
         <div class="container h-100">
             <div class="row justify-content-center h-100">
                 <div class="col-xl-6">
                     <div class="form-input-content">
                         <div class="card login-form mb-0">
                             <div class="card-body pt-5">
-                                <a class="text-center" href="#"> <h4>L O G I N</h4></a>
-                                @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul>
-                                            @foreach ($errors->all() as $item)
-                                                <li>{{ $item }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                                <form class="mt-5 mb-5 login-input" method="POST" action="login">
+                                <a class="text-center"> <h4>L O G I N</h4></a>
+                                <form class="mt-5 mb-5 login-input" method="POST" action="{{ route('login')}}">
                                     @csrf
                                     <div class="form-group">
-                                        <input type="email" class="form-control" placeholder="Email" name="email" value="{{old('email')}}" required>
+                                        <input type="email" class="form-control" placeholder="Email" name="email" required autofocus>
                                     </div>
                                     <div class="form-group">
                                         <input type="password" class="form-control" placeholder="Password" name="password" required>
@@ -73,5 +63,31 @@
     <script src="/assets/js/settings.js"></script>
     <script src="/assets/js/gleek.js"></script>
     <script src="/assets/js/styleSwitcher.js"></script>
+    <script src="/assets/js/sweetalert2.all.min.js"></script>
+
+    <script>
+    // Check if success message exists in session
+    @if (session('sukses'))
+        // Display SweetAlert2 alert with success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('sukses') }}',
+            timer: 1500
+        });
+    @endif
+    </script>
+
+    <script>
+    // Check if error message exists in session
+    @if (session('error'))
+        // Display SweetAlert2 alert with error message
+        Swal.fire({
+            icon: 'error',
+            title: 'Walaahhh...',
+            text: '{{ session('error') }}',
+        });
+    @endif
+</script>
 </body>
 </html>
