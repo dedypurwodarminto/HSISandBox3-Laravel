@@ -31,8 +31,8 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Jenis Barang</th>
                                         <th>Nama Barang</th>
+                                        <th>Jenis</th>
                                         <th>Harga</th>
                                         <th>Stok</th>
                                         <th>Aksi</th>
@@ -45,9 +45,9 @@
                                     @foreach ($data_barang as $row)
                                     <tr>
                                         <td>{{$no++}}</td>
-                                        <td>{{$row->id_jenis}}</td>
                                         <td>{{$row->nama_barang}}</td>
-                                        <td>{{$row->harga}}</td>
+                                        <td>{{$row->nama_jenis}}</td>
+                                        <td>{{ number_format($row->harga)}}</td>
                                         <td>{{$row->stok}}</td>
                                         <td>
                                             <a href="#modalEdit{{$row->id}}" data-toggle="modal" class="btn btn-sm btn-primary"><i class="fa fa-edit"> Ubah</i></a>
@@ -76,23 +76,23 @@
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <select name="id_jenis" class="form-control" required>
-                            <option disabled selected value>-- Pilih jenis --</option>
-                            @php
-                                foreach ($data_jenis as $jenis) {
-                                    echo "<option value=". $jenis->id .">". $jenis->nama_jenis ."</option>";
-                                }
-                            @endphp
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <input type="text" class="form-control" name="nama_barang" placeholder="Nama barang..." required>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="harga" placeholder="Harga..." required>
+                    <select name="id_jenis" class="form-control" required>
+                        <option disabled selected value>-- Pilih jenis --</option>
+                            @foreach ($data_jenis as $jenis)
+                                <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="stok" placeholder="Stok barang..." required>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
+                        <input type="number" class="form-control" name="harga" placeholder="Harga..." required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" name="stok" placeholder="Stok barang..." required>
+                        <div class="input-group-append"><span class="input-group-text">Pcs</span></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -116,23 +116,23 @@
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <select name="id_jenis" class="form-control" required>
-                            <option disabled selected value>-- Pilih jenis --</option>
-                            @php
-                                foreach ($data_jenis as $jenis) {
-                                    echo "<option value=". $jenis->id .">". $jenis->nama_jenis ."</option>";
-                                }
-                            @endphp
+                        <input type="text" class="form-control" name="nama_barang" value="{{ $d->nama_barang}}" placeholder="Nama barang..." required>
+                    </div>
+                    <div class="form-group">
+                    <select name="id_jenis" class="form-control" required>
+                        <option hidden value="{{ $d->id_jenis }}">{{ $d->nama_jenis }}</option>
+                            @foreach ($data_jenis as $jenis)
+                                <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                            @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" value="{{$d->nama_barang}}" name="nama_barang" placeholder="Nama barang..." required>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
+                        <input type="number" id="harga" pattern="[0-9.,]+" class="form-control" name="harga" value="{{ $d->harga }}" placeholder="Harga..." required>
                     </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" value="{{$d->harga}}" name="harga" placeholder="Harga..." required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" value="{{$d->stok}}" name="stok" placeholder="Stok barang..." required>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" name="stok" value="{{ $d->stok }}" placeholder="Stok barang..." required>
+                        <div class="input-group-append"><span class="input-group-text">Pcs</span></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -145,19 +145,21 @@
 </div>
 @endforeach
 
-@foreach ($data_jenis as $c)
+@foreach ($data_barang as $c)
 <div class="modal fade" id="modalHapus{{$c->id}}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Jenis Barang</h5>
+                <h5 class="modal-title">Hapus Barang</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <form action="/barang/destroy/{{$c->id}}" method="GET">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <h5>Apakah anda yakin akan menghapus data ini?</h5>
+                        <h4>Apakah yakin akan menghapus:<br> 
+                            - <b><i>{{ $c->nama_barang }}</i></b>
+                        </h4>
                     </div>
                 </div>
                 <div class="modal-footer">

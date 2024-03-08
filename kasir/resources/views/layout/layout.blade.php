@@ -206,6 +206,7 @@
                 }
             });
         @endif
+
     </script>
 
 </body>
