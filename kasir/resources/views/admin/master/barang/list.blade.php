@@ -128,7 +128,7 @@
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend"><span class="input-group-text">Rp</span></div>
-                        <input type="number" id="harga" pattern="[0-9.,]+" class="form-control" name="harga" value="{{ $d->harga }}" placeholder="Harga..." required>
+                        <input type="number" id="harga" class="form-control" name="harga" value="{{ $d->harga }}" placeholder="Harga..." required>
                     </div>
                     <div class="input-group mb-3">
                         <input type="number" class="form-control" name="stok" value="{{ $d->stok }}" placeholder="Stok barang..." required>
