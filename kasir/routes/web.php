@@ -68,4 +68,5 @@ Route::group(['middleware' => ['auth', 'roles:admin,kasir']], function () {
    Route::get('/transaksi', [TransaksiController::class, 'index']);
    Route::get('/transaksi/create', [TransaksiController::class, 'create']);
    Route::get('/transaksi/store', [TransaksiController::class, 'create']);
+   Route::get('/transaksi/detail/{no_transaksi}', [TransaksiController::class, 'detail']);
 });

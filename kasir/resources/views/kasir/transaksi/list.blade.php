@@ -48,8 +48,20 @@
                                         <td>{{ date('d/M/Y', strtotime($row->tanggal)) }}</td>
                                         <td>Rp.{{ number_format($row->total_bayar) }}</td>
                                         <td>
-                                            <a href="#" target="_blank" class="btn btn-xs btn-primary"><i class="fa fa-print"> Cetak</i></a>
-                                        </td>
+                                            <div class="dropdown">
+                                                <a class="btn btn-sm btn-info" href="/transaksi/detail/{{ $row->no_transaksi }}">
+                                                    <i class="fa fa-list"></i>
+                                                    Detail
+                                                </a>
+                                                <button class="btn btn-sm btn-danger dropdown-toggle" type="button" id="menuButton" data-toggle="dropdown">
+                                                    <i class="fa fa-print"></i> Cetak </i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">Faktur</a>
+                                                    <a class="dropdown-item" href="#">Invoice</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </tr>
                                     @endforeach
                                 </tbody>

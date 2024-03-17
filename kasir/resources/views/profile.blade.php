@@ -47,7 +47,6 @@
                                  <input type="password" name="password" class="form-control" placeholder="Password baru..." required>
                               </div>
                            </div>
-                           
                         </div>
                         <div class="card-footer">
                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Ubah</button>

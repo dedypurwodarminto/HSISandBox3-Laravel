@@ -35,53 +35,79 @@
                         <div class="col-md-3">
                            <div class="form-group">
                               <div>
+                                 @php
+                                    // setlocale(LC_TIME, 'id_ID');
+                                    // $longdate = strftime('%d %B %Y');
+                                    //English: date('d/m/Y'), 'd/F/Y'
+
+                                    $newTrans = "";
+                                    $lastRecVal =  $data_trans->last()->no_transaksi;
+                                    for ($i=0; $i < strlen($lastRecVal)-1; $i++) {
+                                       $newTrans = $newTrans."0";
+                                    }
+                                    $newTrans = $newTrans.intval($lastRecVal)+1
+                                 @endphp
                                  <label for="no_transaksi">No Transaksi</label>
-                                 <input type="text" class="form-control" name="no_transaksi" value="contoh1" readonly required>
+                                 <input type="text" class="form-control" name="no_transaksi" value="{{ $newTrans }}" readonly required>
                               </div>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group">
                               <label>Tanggal</label>
-                              <input type="text" class="form-control" value="{{ date('d/M/Y') }}" readonly required>
+                              <input type="text" class="form-control" value="{{ date('d/m/Y') }}" readonly required>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group">
                               <label>Uang pembeli</label>
-                              <input type="number" class="form-control" name="uang_pembeli" placeholder="Uang pembeli..." required>
+                              <input type="number" class="form-control" id="uangPembeli" value="0" required>
                            </div>
                            </div>
                            <div class="col-md-3">
                            <div class="form-group">
                               <label>Kembalian</label>
-                              <input type="number" class="form-control" name="kembalian" readonly>
+                              <input type="number" class="form-control" id="kembalian" placeholder="0" readonly style="font-weight: bold; color: red">
                            </div>
                         </div>
                      </div>
-                     <div class="table-responsive">
+                     <div class="table-responsive table-hover">
                         <table class="table table-bordered">
-                           <tr>
+                           <tr class="table-active">
                               <th>No</th>
                               <th>Barang</th>
-                              <th>Harga</th>
-                              <th>Qty</th>
-                              <th>Subtotal</th>
+                              <th style="text-align: center">Harga</th>
+                              <th style="text-align: center">Qty</th>
+                              <th style="text-align: center">Subtotal</th>
+                              <th>Opsi</th>
                            </tr>
+                           @php
+                               $no = 1;
+                           @endphp
+                           @foreach ($data_barang as $row)
+                              <tr>
+                                 {{-- SIMPAN DATA DALAM ARRAY PENAMPUNG_________________ --}}
+                                 <td>{{ $no++ }}</td>
+                                 <td>{{ $row->nama_barang }}</td>
+                                 <td style="text-align: right">{{number_format( $row->harga, 0, ',', '.')}}</td>
+                                 <td style="text-align: right">{{ number_format( $row->qty, 0, ',', '.') }}</td>
+                                 <td style="text-align: right">{{ number_format( $row->harga * $row->qty, 0, ',', '.') }}</td>
+                                 <td>
+                                    <a href="#modalHapus{{$row->id}}" data-toggle="modal" class="btn btn-sm btn-danger"><i class="fa fa-trash"> Hapus</i></a>
+                                 </td>
+                              </tr>
+                           @endforeach
                            <tr>
-                              <td>No</td>
-                              <td>Barang</td>
-                              <td>Harga</td>
-                              <td>Qty</td>
-                              <td>Subtotal</td>
+                              <td colspan="4">Total</td>
+                              <td style="text-align: right" name="total">{{number_format(120000, 0, ',', '.')}}</td>
                            </tr>
                            <tr>
                               <td colspan="4">Diskon</td>
-                              <td>Diskon</td>
+                              <td style="text-align: right" name="diskon">{{number_format(2000, 0, ',', '.')}}</td>
                            </tr>
                            <tr>
                               <td colspan="4">Total bayar</td>
-                              <td>Total bayar</td>
+                              <td style="text-align: right" name="totalBayar">{{number_format(200000, 0, ',', '.')}}</td>
                            </tr>
                         </table>
                      </div>
@@ -107,7 +133,7 @@
             @csrf
             <div class="modal-body">
                <div class="form-group">
-                  <label for="jenis">Jenis barang</label>
+                  <label for="jenis">Nama barang</label>
                   <select name="id_barang" class="form-control" required>
                      <option disabled selected value>-- Pilih barang --</option>
                      {{-- @foreach ($data_transaksi as $t)
@@ -128,5 +154,41 @@
    </div>
 </div>
 </div>
+
+@foreach ($data_barang as $c)
+<div class="modal fade" id="modalHapus{{$c->id}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hapus Data user</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <form action="/user/destroy/{{$c->id}}" method="GET">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <h5>Apakah anda yakin akan menghapus data ini?</h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-close" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+                    <button type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+   document.getElementById('uangPembeli').addEventListener('input', function () {
+      var totalBayar = parseInt(document.querySelector('td[name="totalBayar"]').textContent.replace(/\./g, ""));
+      var uangPembeli = parseInt(this.value);
+      var kembalian = uangPembeli - totalBayar;
+
+      document.getElementById('kembalian').value = kembalian;
+   });
+</script>
+
+@endforeach
 
 @endsection
