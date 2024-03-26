@@ -21,6 +21,12 @@ class BarangController extends Controller
         return view('admin.master.barang.list', $data);
     }
 
+    public function show($id)
+    {
+        $barang = Barang::find($id);
+        return response()->json($barang);
+    }
+
     public function store(Request $request)
     {
         Barang::create([

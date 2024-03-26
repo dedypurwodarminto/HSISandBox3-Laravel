@@ -63,7 +63,7 @@
                               <?php $total = $d->harga * $d->qty ?>
                               <tr>
                                  <td>{{ $no++ }}</td>
-                                 <td>{{ $d->nama_barang }} {{ $d->no_transaksi }}</td>
+                                 <td>{{ $d->nama_barang }}</td>
                                  <td style="text-align: right">{{ number_format($d->harga) }}</td>
                                  <td style="text-align: right">{{ $d->qty }}</td>
                                  <td style="text-align: right">{{ number_format($total) }}</td>
@@ -76,11 +76,11 @@
                            </tr>
                            <tr>
                               <td colspan="4">Diskon</td>
-                              <td style="text-align: right">{{ number_format($diskon) }}</td>
+                              <td style="text-align: right">{{ number_format($data_detail->diskon) }}</td>
                            </tr>
                            <tr>
                               <td colspan="4">Harga bayar</td>
-                              <td style="text-align: right">{{ number_format($bayar - $diskon) }}</td>
+                              <td style="text-align: right">{{ number_format($bayar - $data_detail->diskon) }}</td>
                            </tr>
                         </table>
                      </div>

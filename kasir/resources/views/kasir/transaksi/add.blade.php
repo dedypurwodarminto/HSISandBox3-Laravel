@@ -16,6 +16,8 @@
       <div class="row">
          <div class="col-12">
             <div class="card">
+               <!-- Sematkan data diskon sebagai atribut data pada elemen HTML -->
+               <div id="diskonData" data-diskon="{{ $data_diskon->diskon }}" data-total-belanja="{{ $data_diskon->total_belanja }}"></div>
                <form action="/transaksi/store" method="POST">
                   @csrf
                   <div class="card-body">
@@ -24,7 +26,7 @@
                            <h4 class="card-title">{{ $title }}
                         </div>
                         <div>
-                           <button class="btn btn-primary" type="button" data-target="#modalCreate" data-toggle="modal">
+                           <button class="btn btn-primary" type="button" data-target="#modalBarang" data-toggle="modal">
                               <i class="fa fa-plus"></i>
                               Tambah barang
                            </button></h4>
@@ -36,80 +38,73 @@
                            <div class="form-group">
                               <div>
                                  @php
-                                    // setlocale(LC_TIME, 'id_ID');
-                                    // $longdate = strftime('%d %B %Y');
-                                    //English: date('d/m/Y'), 'd/F/Y'
-
                                     $newTrans = "";
-                                    $lastRecVal =  $data_trans->last()->no_transaksi;
-                                    for ($i=0; $i < strlen($lastRecVal)-1; $i++) {
-                                       $newTrans = $newTrans."0";
+                                    if ($data_trans->count() > 0) {
+                                       $lastRecVal = $data_trans->last()->no_transaksi;
+                                       $newTrans = str_pad(intval($lastRecVal) + 1, strlen($lastRecVal), "0", STR_PAD_LEFT);
+                                    } else {
+                                       $newTrans = "0001";
                                     }
-                                    $newTrans = $newTrans.intval($lastRecVal)+1
                                  @endphp
                                  <label for="no_transaksi">No Transaksi</label>
                                  <input type="text" class="form-control" name="no_transaksi" value="{{ $newTrans }}" readonly required>
+                                 <input type="hidden" name="id_kasir" value="{{  }}">
                               </div>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group">
-                              <label>Tanggal</label>
-                              <input type="text" class="form-control" value="{{ date('d/m/Y') }}" readonly required>
+                              <label for="tanggal">Tanggal</label>
+                              <input type="text" class="form-control" name="tanggal" value="{{ date('d-m-Y') }}" readonly required>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group">
-                              <label>Uang pembeli</label>
+                              <label for="uangPembeli">Uang pembeli</label>
                               <input type="number" class="form-control" id="uangPembeli" value="0" required>
                            </div>
-                           </div>
-                           <div class="col-md-3">
+                        </div>
+                        <div class="col-md-3">
                            <div class="form-group">
-                              <label>Kembalian</label>
-                              <input type="number" class="form-control" id="kembalian" placeholder="0" readonly style="font-weight: bold; color: red">
+                              <label for="kembalian">Kembalian</label>
+                              <input type="number" class="form-control" id="kembalian" placeholder="0" style="font-weight: bold; color: red" readonly>
                            </div>
                         </div>
                      </div>
                      <div class="table-responsive table-hover">
-                        <table class="table table-bordered">
-                           <tr class="table-active">
-                              <th>No</th>
-                              <th>Barang</th>
-                              <th style="text-align: center">Harga</th>
-                              <th style="text-align: center">Qty</th>
-                              <th style="text-align: center">Subtotal</th>
-                              <th>Opsi</th>
-                           </tr>
-                           @php
-                               $no = 1;
-                           @endphp
-                           @foreach ($data_barang as $row)
-                              <tr>
-                                 {{-- SIMPAN DATA DALAM ARRAY PENAMPUNG_________________ --}}
-                                 <td>{{ $no++ }}</td>
-                                 <td>{{ $row->nama_barang }}</td>
-                                 <td style="text-align: right">{{number_format( $row->harga, 0, ',', '.')}}</td>
-                                 <td style="text-align: right">{{ number_format( $row->qty, 0, ',', '.') }}</td>
-                                 <td style="text-align: right">{{ number_format( $row->harga * $row->qty, 0, ',', '.') }}</td>
-                                 <td>
-                                    <a href="#modalHapus{{$row->id}}" data-toggle="modal" class="btn btn-sm btn-danger"><i class="fa fa-trash"> Hapus</i></a>
-                                 </td>
+                        <table id="tabel-barang" class="table table-bordered">
+                           <thead>
+                              <tr class="table-active">
+                                 <th>No</th>
+                                 <th>Barang</th>
+                                 <th style="text-align: center">Harga</th>
+                                 <th style="text-align: center">Qty</th>
+                                 <th style="text-align: center">Subtotal</th>
+                                 <th>Opsi</th>
                               </tr>
-                           @endforeach
-                           <tr>
-                              <td colspan="4">Total</td>
-                              <td style="text-align: right" name="total">{{number_format(120000, 0, ',', '.')}}</td>
-                           </tr>
-                           <tr>
-                              <td colspan="4">Diskon</td>
-                              <td style="text-align: right" name="diskon">{{number_format(2000, 0, ',', '.')}}</td>
-                           </tr>
-                           <tr>
-                              <td colspan="4">Total bayar</td>
-                              <td style="text-align: right" name="totalBayar">{{number_format(200000, 0, ',', '.')}}</td>
-                           </tr>
+                           </thead>
+                           <tbody>
+                              <!-- Isi tabel akan diisi melalui JavaScript -->
+                           </tbody>
+                           <tfoot>
+                              <tr>
+                                 <td colspan="4">Total</td>
+                                 <td style="text-align: right" id="totalHarga">0</td>
+                              </tr>
+                              <tr>
+                                 <td colspan="4">Diskon</td>
+                                 <td style="text-align: right" id="diskon">0</td>
+                                 <input type="hidden" name="diskon" >
+                              </tr>
+                              <tr>
+                                 <td colspan="4">Total bayar</td>
+                                 <td style="text-align: right" id="totalBayar">0</td>
+                                 <input type="hidden" name="totalBayar">
+                              </tr>
+                           </tfoot>
                         </table>
+                        <!-- Input tersembunyi untuk menyimpan barang yang dipilih -->
+                        <div id="barangTerpilih"></div>
                      </div>
                   </div>
                   <div class="card-footer">
@@ -122,73 +117,171 @@
       </div>
    </div>
 
-   <div class="modal fade" id="modalCreate" tabindex="-1" role="dialog" aria-hidden="true">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title">Tambah Transaksi</h5>
-            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-         </div>
-         <form action="/transaksi/cart" method="POST">
-            @csrf
+   <!-- Modal Tambah Barang -->
+   <div class="modal fade" id="modalBarang" tabindex="-1" role="dialog" aria-labelledby="modalBarangLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="modalBarangLabel">Tambah Barang</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">x</span>
+               </button>
+            </div>
             <div class="modal-body">
-               <div class="form-group">
-                  <label for="jenis">Nama barang</label>
-                  <select name="id_barang" class="form-control" required>
-                     <option disabled selected value>-- Pilih barang --</option>
-                     {{-- @foreach ($data_transaksi as $t)
-                        <option value="{{ $t->id }}">{{ $t->no_transaksi }}</option>
-                     @endforeach --}}
-                  </select>
-               </div>
-               <div id="tampil_barang">
-
-               </div>
+               <!-- Form Tambah Barang -->
+               <form id="formTambahBarang">
+                  @csrf
+                  <div class="form-group">
+                     <label for="namaBarang">Nama Barang</label>
+                     <select class="form-control" id="namaBarang" name="id_barang" onchange="tampilkanDetailBarang()">
+                        <option value="">Pilih Barang</option>
+                        @foreach($data_barang as $item)
+                           <option value="{{ $item->id }}">{{ $item->nama_barang }}</option>
+                        @endforeach
+                     </select>
+                  </div>
+                  <div id="grupDetail" style="display: none;">
+                     <div class="form-group">
+                        <label for="hargaBarang">Harga</label>
+                        <input type="number" class="form-control" id="hargaBarang" name="harga" readonly>
+                     </div>
+                     <div class="form-group">
+                        <label for="stokBarang">Stok</label>
+                        <input type="number" class="form-control" id="stokBarang" name="stok" readonly>
+                     </div>
+                     <div class="form-group">
+                        <label for="jumlahBarang">Jumlah</label>
+                        <input type="number" class="form-control" id="jumlahBarang" name="quantity">
+                     </div>
+                  </div>
+               </form>
             </div>
             <div class="modal-footer">
-               <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Batal</button>
-               <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+               <button type="button" class="btn btn-primary" onclick="tambahBarangKeNota()">Tambahkan ke Nota</button>
             </div>
-         </form>
+         </div>
       </div>
    </div>
 </div>
-</div>
-
-@foreach ($data_barang as $c)
-<div class="modal fade" id="modalHapus{{$c->id}}" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Hapus Data user</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-            </div>
-            <form action="/user/destroy/{{$c->id}}" method="GET">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <h5>Apakah anda yakin akan menghapus data ini?</h5>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-close" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-                    <button type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Hapus</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <script>
+   // Mengambil nilai diskon dari atribut data
+   var no_urut = 1;
+   var totalBayar = 0;
+   var diskon = document.getElementById('diskonData').getAttribute('data-diskon');
+   var diskonTotalBelanja = document.getElementById('diskonData').getAttribute('data-total-belanja');
+
    document.getElementById('uangPembeli').addEventListener('input', function () {
-      var totalBayar = parseInt(document.querySelector('td[name="totalBayar"]').textContent.replace(/\./g, ""));
       var uangPembeli = parseInt(this.value);
       var kembalian = uangPembeli - totalBayar;
 
       document.getElementById('kembalian').value = kembalian;
    });
-</script>
 
-@endforeach
+   // Fungsi untuk menampilkan detail barang ketika barang dipilih pada modal
+   function tampilkanDetailBarang() {
+   var idBarang = document.getElementById('namaBarang').value;
+   var hargaBarangInput = document.getElementById('hargaBarang');
+   var stokBarangInput = document.getElementById('stokBarang');
+   var jumlahBarangInput = document.getElementById('jumlahBarang');
+
+   if (idBarang) {
+      // Menggunakan fetch API untuk mengirim permintaan ke server
+      fetch('/api/barang/' + idBarang)
+         .then(response => response.json())
+         .then(data => {
+            // Menampilkan harga barang di dalam modal
+            hargaBarangInput.value = data.harga;
+            stokBarangInput.value = data.stok;
+            // Mengatur ulang jumlah barang setiap kali barang baru dipilih
+            jumlahBarangInput.value = '';
+            // Tampilkan input harga dan jumlah
+            document.getElementById("grupDetail").style.display = 'block';
+         })
+         .catch(error => console.error('Error:', error));
+   } else {
+      // Reset harga dan jumlah jika tidak ada barang yang dipilih
+      hargaBarangInput.value = '0';
+      stokBarangInput.value = '0';
+      jumlahBarangInput.value = '0';
+      // Sembunyikan input harga dan jumlah
+      document.getElementById("grupDetail").style.display = 'none';
+   }
+}
+
+	// Fungsi untuk menambahkan barang ke nota
+	function tambahBarangKeNota() {
+		var idBarang = document.getElementById('namaBarang').value;
+		var jumlahBarang = document.getElementById('jumlahBarang').value;
+		var hargaBarang = document.getElementById('hargaBarang').value;
+		var subtotal = jumlahBarang * hargaBarang;
+
+		// Logika untuk menambahkan input tersembunyi dengan data barang
+		// Tambahkan input tersembunyi untuk id_barang dan quantity
+		var inputIdBarang = document.createElement('input');
+		inputIdBarang.type = 'hidden';
+		inputIdBarang.name = 'barang[id_barang][]';
+		inputIdBarang.value = idBarang;
+		document.getElementById('barangTerpilih').appendChild(inputIdBarang);
+
+		var inputQuantity = document.createElement('input');
+		inputQuantity.type = 'hidden';
+		inputQuantity.name = 'barang[quantity][]';
+		inputQuantity.value = jumlahBarang;
+		document.getElementById('barangTerpilih').appendChild(inputQuantity);
+
+		// Membuat elemen baris baru di tabel
+		var tabelBarang = document.getElementById('tabel-barang').getElementsByTagName('tbody')[0];
+		var barisBaru = tabelBarang.insertRow();
+		barisBaru.innerHTML = `
+         <td>${no_urut++}</td>
+         <td>${document.querySelector("#namaBarang option:checked").text}</td>
+         <td>${hargaBarang}</td>
+         <td>${jumlahBarang}</td>
+         <td>${subtotal}</td>
+    `;
+
+		// Menutup modal
+      // Sembunyikan harga, stok dan jumlah barang
+      document.getElementById("grupDetail").style.display = 'none';
+      // Reset pilihan nama barang 
+      document.getElementById('namaBarang').value = '';
+		$('#modalBarang').modal('hide');
+
+		// Mengupdate total harga
+		updateTotalHarga();
+	}
+
+	// Fungsi untuk mengupdate total harga
+	function updateTotalHarga() {
+		var totalHarga = 0;
+
+		document.querySelectorAll('#tabel-barang tbody tr').forEach(tr => {
+			totalHarga += parseInt(tr.cells[4].innerText);
+		});
+		document.getElementById('totalHarga').innerText = totalHarga;
+
+      total(totalHarga);
+	}
+
+   function total(totalHarga) {
+      var hargaDiskon = 0;
+		totalBayar = 0;
+
+      // Tampilkan data Diskon jika total belanja memenuhi syarat
+      if (totalHarga >= diskonTotalBelanja) {
+         hargaDiskon = diskon * totalHarga / 100;
+         document.getElementById('diskon').innerText = hargaDiskon;
+         document.getElementsByName('diskon')[0].value = hargaDiskon;
+         totalBayar = totalHarga - hargaDiskon;
+
+      } else {
+         totalBayar = totalHarga;
+      }
+      document.getElementById('totalBayar').innerText = totalBayar;
+      document.getElementsByName('totalBayar')[0].value = totalBayar;
+   }
+</script>
 
 @endsection

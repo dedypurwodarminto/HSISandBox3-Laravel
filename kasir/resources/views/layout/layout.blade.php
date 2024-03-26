@@ -76,6 +76,7 @@
                                 <span class="activity active"></span>
                                 <img src="/assets/images/users/profile.jpg" height="40" width="40" alt="">
                             </div>
+                            <div class="hidden" id="id_kasir" dataID="{{ Auth::user()->id }}"></div>
                             <div class="drop-down dropdown-profile dropdown-menu">
                                 <div class="dropdown-content-body">
                                     <ul>
